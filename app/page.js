@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// 10 Daily Vocabulary with full Mongolian translation & sentence meaning
+// 10 Daily Vocabulary
 const dailyVocabularyList = [
   { word: "Ubiquitous", level: "C1", meaning: "Хаа сайгүй тааралддаг, тархсан.", example: "Smartphones are ubiquitous in modern society.", trans: "Ухаалаг гар утаснууд орчин үеийн нийгэмд хаа сайгүй тархсан байна." },
   { word: "Mitigate", level: "B2", meaning: "Бууруулах, багасгах, хөнгөвчлөх.", example: "We need to mitigate the risks of climate change.", trans: "Бид уур амьсгалын өөрчлөлтийн эрсдэлийг бууруулах хэрэгтэй." },
@@ -21,14 +21,12 @@ const dailyVocabularyList = [
   { word: "Diligent", level: "B2", meaning: "Хөдөлмөрч, хичээнгүй.", example: "She is a diligent student who always does her homework.", trans: "Тэр бол гэрийн даалгавраа үргэлж хийдэг хичээнгүй сурагч юм." }
 ];
 
-// Rotating Writing Topics
 const writingPrompts = [
   "Some people think that universities should provide graduates with the knowledge and skills needed in the workplace. Others think that the true function of a university should be to give access to knowledge for its own sake. Discuss both views and give your opinion.",
   "In many countries, government spending on environmental protection is becoming increasingly important. To what extent do you think governments should fund green energy projects compared to other public sectors?",
   "With the rapid advancement of artificial intelligence, many traditional jobs are being replaced by automated systems. What are the advantages and disadvantages of this trend for future generations?"
 ];
 
-// Rotating Reading Passages
 const readingPassages = [
   {
     title: "The Evolution of Digital Education Systems",
@@ -48,12 +46,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Navigation Tabs
   const [activeTab, setActiveTab] = useState('home');
   const [ieltsSubTab, setIeltsSubTab] = useState('menu');
 
-  // Gamification Stats
-  const [xp, setXp] = useState(30);
+  const [xp, setXp] = useState(40);
   const [streak, setStreak] = useState(1);
 
   // Test States
@@ -76,12 +72,23 @@ export default function Home() {
   };
   const [testQuestions] = useState(generate30Questions());
 
-  // Dynamic Writing & Reading States
+  // Writing & Reading Dynamic States
   const [writingIndex, setWritingIndex] = useState(0);
   const [userEssay, setUserEssay] = useState('');
   const [readingIndex, setReadingIndex] = useState(0);
 
-  // AI Chat States (Context-Aware Dynamic Response)
+  // Listening Interactive Quiz States
+  const [listeningQIndex, setListeningQIndex] = useState(0);
+  const [listeningScore, setListeningScore] = useState(0);
+  const [listeningFinished, setListeningFinished] = useState(false);
+
+  const listeningQuestions = [
+    { q: "1. What is the student registering for?", options: ["A. Campus parking", "B. Library membership", "C. Dormitory room"], correct: 1 },
+    { q: "2. How many books can an undergraduate student borrow at once?", options: ["A. Up to 2 books", "B. Up to 5 books", "C. Up to 10 books"], correct: 1 },
+    { q: "3. What is the maximum borrowing duration for standard books?", options: ["A. 7 days", "B. 14 days", "C. 30 days"], correct: 1 }
+  ];
+
+  // AI Chat States
   const [input, setInput] = useState('');
   const [chatLog, setChatLog] = useState([
     { role: 'assistant', content: "Hello! I am your AI English Teacher. Type or say anything you want to learn in English, and I will instantly translate, structure, and give you the correct professional phrases with pronunciation!" }
@@ -152,7 +159,6 @@ export default function Home() {
     recognition.start();
   };
 
-  // Smart Context-Aware AI Teacher Handler (Matches user input accurately)
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || generating) return;
@@ -166,18 +172,13 @@ export default function Home() {
       let customPhrase = `To express "${userMessage}" in professional English, use this precise phrase:`;
       let customEnglish = `"Furthermore, regarding this particular matter, we can state that..."`;
       let customPronunciation = `[ˈfɜːrðərmɔːr, rɪˈɡɑːrdɪŋ ðɪs pərtɪkjələr ˈmætər]`;
-      let customMongolian = `Уг санааг англиар илэрхийлэхэд: "${userMessage}" гэсэн утгыг гаргах хамгийн оновчтой хэллэг юм.`;
+      let customMongolian = `Уг санааг англиар илэрхийлэхэд хамгийн оновчтой хэллэг юм.`;
 
       if (userMessage.toLowerCase().includes("танилцуул") || userMessage.toLowerCase().includes("нэр")) {
         customPhrase = `To introduce yourself professionally in English:`;
         customEnglish = `"Hello, let me introduce myself. My name is [Your Name], and I am currently studying..."`;
         customPronunciation = `[həˈloʊ, lɛt mi ˌɪntrəˈdʌs maɪˈsɛlf]`;
-        customMongolian = `Өөрийгөө англиар танилцуулах үед хэрэглэх үндсэн загвар өгүүлбэр.`;
-      } else if (userMessage.toLowerCase().includes("ажил") || userMessage.toLowerCase().includes("сургууль")) {
-        customPhrase = `To talk about your work or studies:`;
-        customEnglish = `"I am currently pursuing my undergraduate degree in hygiene and epidemiology at MNUMS."`;
-        customPronunciation = `[aɪ æm ˈkɜːrəntli pərˈsuːɪɪŋ maɪ ˌʌndərɡrædʒuət dɪˈɡriː]`;
-        customMongolian = `Ажил эсвэл сургуулийнхаа талаар ярихад хэрэглэх мэргэжлийн өгүүлбэр.`;
+        customMongolian = `Өөрийгөө англиар танилцуулах үед хэрэглэх үндсэн загвар.`;
       }
 
       const teacherResponse = `💡 **Contextual English Guide:**\n\n${customPhrase}\n\n👉 **${customEnglish}**\n\n📌 **Pronunciation:** ${customPronunciation}\n\n🇲🇳 **Монгол тайлбар:** ${customMongolian}`;
@@ -197,6 +198,18 @@ export default function Home() {
     } else {
       setTestFinished(true);
       setXp(prev => prev + 30);
+    }
+  };
+
+  const handleAnswerListening = (optionIndex) => {
+    if (optionIndex === listeningQuestions[listeningQIndex].correct) {
+      setListeningScore(prev => prev + 1);
+    }
+    if (listeningQIndex + 1 < listeningQuestions.length) {
+      setListeningQIndex(prev => prev + 1);
+    } else {
+      setListeningFinished(true);
+      setXp(prev => prev + 15);
     }
   };
 
@@ -443,20 +456,20 @@ export default function Home() {
         </div>
       )}
 
-      {/* TAB 5: DYNAMIC IELTS CENTER (Rotating Writing, Reading, Audio Listening) */}
+      {/* TAB 5: DYNAMIC IELTS CENTER (Interactive Listening Quiz, Reading, Writing, Speaking) */}
       {activeTab === 'ielts' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingBottom: '40px' }}>
           <div>
             <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: '800' }}>INTERACTIVE IELTS CENTER</span>
             <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '2px 0' }}>IELTS Skills Modules</h2>
-            <p style={{ fontSize: '12px', color: '#94a3b8' }}>Сэдэв нь солигддог динамик Writing, Reading болон Listening хэсэг.</p>
+            <p style={{ fontSize: '12px', color: '#94a3b8' }}>Аудио сонсоод шалгалт өгөх Listening, Reading болон Writing хэсэг.</p>
           </div>
 
           {ieltsSubTab === 'menu' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div onClick={() => setIeltsSubTab('listening')} style={{ background: '#111827', padding: '16px', borderRadius: '16px', border: '1px solid #1f2937', cursor: 'pointer' }}>
-                <h3 style={{ fontSize: '15px', color: '#38bdf8', margin: '0 0 4px 0', fontWeight: '800' }}>🎧 1. Listening Section (Audio Practice)</h3>
-                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>University lecture & conversation audio tasks.</p>
+                <h3 style={{ fontSize: '15px', color: '#38bdf8', margin: '0 0 4px 0', fontWeight: '800' }}>🎧 1. Listening (Full Audio Conversation + Quiz)</h3>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>3 минутын бодит харилцан яриа ба шалгалт.</p>
               </div>
 
               <div onClick={() => setIeltsSubTab('reading')} style={{ background: '#111827', padding: '16px', borderRadius: '16px', border: '1px solid #1f2937', cursor: 'pointer' }}>
@@ -476,85 +489,12 @@ export default function Home() {
             </div>
           )}
 
-          {/* LISTENING SUB-VIEW */}
+          {/* LISTENING SUB-VIEW WITH 3-MIN CONVERSATION & QUIZ */}
           {ieltsSubTab === 'listening' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Listening Section (Audio Practice)</h3>
-              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>Listen to academic lectures and student-advisor dialogues to practice note-taking and comprehension.</p>
-              <button onClick={() => speakText("Section 1. You will hear a conversation between a student and a university library supervisor regarding membership registration and textbook borrowing rules.")} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-                🔊 Play Full Audio Passage
-              </button>
-            </div>
-          )}
-
-          {/* READING SUB-VIEW (Switchable Passages) */}
-          {ieltsSubTab === 'reading' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Reading Passage</h3>
-                <button onClick={() => setReadingIndex((prev) => (prev + 1) % readingPassages.length)} style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #334155', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
-                  🔄 Сэдэв солих (Next Passage)
-                </button>
-              </div>
-              <h4 style={{ fontSize: '15px', color: '#f8fafc', margin: '4px 0', fontWeight: '700' }}>{readingPassages[readingIndex].title}</h4>
-              <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>{readingPassages[readingIndex].text}</p>
-            </div>
-          )}
-
-          {/* WRITING SUB-VIEW (Switchable Prompts) */}
-          {ieltsSubTab === 'writing' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Writing Task 2 Prompt</h3>
-                <button onClick={() => setWritingIndex((prev) => (prev + 1) % writingPrompts.length)} style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #334155', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
-                  🔄 Өөр сэдэв авах (Change Topic)
-                </button>
-              </div>
-              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>"{writingPrompts[writingIndex]}"</p>
-              <textarea value={userEssay} onChange={(e) => setUserEssay(e.target.value)} placeholder="Write your essay response here..." style={{ width: '100%', height: '100px', background: '#0b0f19', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '8px', boxSizing: 'border-box', outline: 'none' }}></textarea>
-              <button onClick={() => alert("Essay submitted for AI Band 7.0+ evaluation!")} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-                Submit Essay for AI Evaluation
-              </button>
-            </div>
-          )}
-
-          {/* SPEAKING SUB-VIEW */}
-          {ieltsSubTab === 'speaking' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Speaking Simulator (Part 1, 2, 3)</h3>
-              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>Independent live speaking module where you can practice directly with the AI English Teacher.</p>
-              <button onClick={() => setActiveTab('speak')} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-                Go to AI Speaking Studio →
-              </button>
-            </div>
-          )}
-
-        </div>
-      )}
-
-      {/* BOTTOM NAVIGATION BAR */}
-      <nav aria-label="Main Navigation" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0b0f19', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-around', padding: '10px 0', zIndex: 1000, maxWidth: '600px', margin: '0 auto' }}>
-        <button onClick={() => setActiveTab('home')} style={{ background: 'none', border: 'none', color: activeTab === 'home' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🏠</span> Home
-        </button>
-        <button onClick={() => setActiveTab('speak')} style={{ background: 'none', border: 'none', color: activeTab === 'speak' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎙️</span> Speak
-        </button>
-        <button onClick={() => setActiveTab('words')} style={{ background: 'none', border: 'none', color: activeTab === 'words' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>📖</span> Words
-        </button>
-        <button onClick={() => setActiveTab('test')} style={{ background: 'none', border: 'none', color: activeTab === 'test' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎯</span> Test
-        </button>
-        <button onClick={() => setActiveTab('ielts')} style={{ background: 'none', border: 'none', color: activeTab === 'ielts' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎓</span> IELTS
-        </button>
-      </nav>
-
-    </main>
-  );
-}
+              <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Listening Section (Full Conversation)</h3>
+              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>Эхлээд бүтэн харилцан яриаг сонсоод, дараа нь доорх асуултад хариулна уу.</p>
+              
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => speakText("Good morning, University Library and Student Services. How can I help you today? Good morning. I’m a first-year student here, and I'd like to register for a library membership and learn how
