@@ -24,11 +24,17 @@ const writingPrompts = [
 const readingPassages = [
   {
     title: "The Evolution of Digital Education Systems",
-    text: "The rapid evolution of artificial intelligence in modern higher education has fundamentally transformed how students access research materials and interact with digital learning platforms. Adaptive algorithms now allow custom learning paths tailored to individual student weaknesses."
+    text: "The rapid evolution of artificial intelligence in modern higher education has fundamentally transformed how students access research materials and interact with digital learning platforms. Adaptive algorithms now allow custom learning paths tailored to individual student weaknesses.",
+    question: "What is the primary role of adaptive algorithms in modern education?",
+    options: ["A. Replacing university teachers completely", "B. Providing custom learning paths tailored to student weaknesses", "C. Increasing textbook printing costs"],
+    correct: 1
   },
   {
     title: "Urbanization and Renewable Energy Solutions",
-    text: "As global urban populations expand exponentially, metropolitan areas face unprecedented demands for sustainable energy grids. Integrating solar panels on commercial skyscrapers and utilizing wind turbine farms in coastal zones have become vital municipal priorities."
+    text: "As global urban populations expand exponentially, metropolitan areas face unprecedented demands for sustainable energy grids. Integrating solar panels on commercial skyscrapers and utilizing wind turbine farms in coastal zones have become vital municipal priorities.",
+    question: "Which solution is mentioned for commercial skyscrapers in urban areas?",
+    options: ["A. Integrating solar panels", "B. Building underground parking", "C. Removing glass windows"],
+    correct: 0
   }
 ];
 
@@ -36,7 +42,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
   const [ieltsSubTab, setIeltsSubTab] = useState('menu');
 
-  const [xp, setXp] = useState(50);
+  const [xp, setXp] = useState(60);
   const [streak, setStreak] = useState(1);
 
   // Test States
@@ -63,6 +69,8 @@ export default function Home() {
   const [writingIndex, setWritingIndex] = useState(0);
   const [userEssay, setUserEssay] = useState('');
   const [readingIndex, setReadingIndex] = useState(0);
+  const [readingAnswered, setReadingAnswered] = useState(false);
+  const [readingScore, setReadingScore] = useState(0);
 
   // Listening Interactive Quiz States
   const [listeningQIndex, setListeningQIndex] = useState(0);
@@ -168,6 +176,15 @@ export default function Home() {
     }
   };
 
+  const handleReadingAnswer = (optionIdx) => {
+    if (optionIdx === readingPassages[readingIndex].correct) {
+      setReadingScore(1);
+    } else {
+      setReadingScore(0);
+    }
+    setReadingAnswered(true);
+  };
+
   return (
     <main style={{ minHeight: '100vh', background: '#0b0f19', color: '#f8fafc', display: 'flex', flexDirection: 'column', padding: '16px 16px 90px 16px', maxWidth: '600px', margin: '0 auto', fontFamily: 'system-ui, sans-serif', boxSizing: 'border-box' }}>
       
@@ -188,7 +205,7 @@ export default function Home() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ background: 'linear-gradient(135deg, #161f33, #0f172a)', padding: '22px', borderRadius: '20px', border: '2px solid #38bdf8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: '800' }}>ACCESSIBLE LEARNING HUB</span>
+              <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: '800' }}>PROFESSIONAL IELTS HUB</span>
               <h2 style={{ fontSize: '20px', margin: '6px 0', fontWeight: '800' }}>Сайн байна уу?</h2>
               <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Өнөөдрийн интерактив хичээлүүд бэлэн.</p>
             </div>
@@ -388,12 +405,12 @@ export default function Home() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div onClick={() => setIeltsSubTab('listening')} style={{ background: '#111827', padding: '16px', borderRadius: '16px', border: '1px solid #1f2937', cursor: 'pointer' }}>
                 <h3 style={{ fontSize: '15px', color: '#38bdf8', margin: '0 0 4px 0', fontWeight: '800' }}>🎧 1. Listening (Full Audio Conversation + Quiz)</h3>
-                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>3 минутын бодит харилцан яриа ба шалгалт.</p>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Бодит харилцан яриа ба шалгалт.</p>
               </div>
 
               <div onClick={() => setIeltsSubTab('reading')} style={{ background: '#111827', padding: '16px', borderRadius: '16px', border: '1px solid #1f2937', cursor: 'pointer' }}>
-                <h3 style={{ fontSize: '15px', color: '#38bdf8', margin: '0 0 4px 0', fontWeight: '800' }}>📖 2. Reading Passage (Changing Passages)</h3>
-                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Switchable scientific and academic reading texts.</p>
+                <h3 style={{ fontSize: '15px', color: '#38bdf8', margin: '0 0 4px 0', fontWeight: '800' }}>📖 2. Reading Passage (Passage + Quiz)</h3>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Академик текст болон шалгалтын асуултууд.</p>
               </div>
 
               <div onClick={() => setIeltsSubTab('writing')} style={{ background: '#111827', padding: '16px', borderRadius: '16px', border: '1px solid #1f2937', cursor: 'pointer' }}>
@@ -416,7 +433,7 @@ export default function Home() {
               <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>Эхлээд бүтэн харилцан яриаг сонсоод, дараа нь доорх асуултад хариулна уу.</p>
               
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => speakText("Good morning, University Library and Student Services. How can I help you today? Good morning. I’m a first-year student here, and I'd like to register for a library membership and learn how to borrow reference books for my Hygiene and Epidemiology research. Certainly! Welcome to the university. First, I’ll need to take down some of your details. What is your full name, please? My name is Namuunbaigali Saintugs. Thank you, Namuunbaigali. And your student ID number? It is MNUMS dash 2026 dash 103. Perfect. Now, regarding the library rules: as an undergraduate student, you are allowed to borrow up to 5 books at a time for a maximum duration of 14 days. Reference books, however, can only be used inside the reading hall. I understand. Can I renew my books online if I need them longer? Yes, you can renew them twice through the student portal, provided no other student has reserved them. Also, don't forget that your student ID card also serves as your library access card. That's very convenient. Thank you so much for your help! You're welcome. Have a great semester ahead!")} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px', flex: 1 }}>
+                <button onClick={() => speakText("Good morning, University Library and Student Services. How can I help you today? Good morning. I’m a first-year student here, and I'd like to register for a library membership and learn how to borrow reference books. Certainly! Welcome to the university. First, I’ll need to take down some of your details. What is your full name, please? My name is Alex student. Thank you. And your student ID number? It is MNUMS dash 2026 dash 103. Perfect. Now, regarding the library rules: as an undergraduate student, you are allowed to borrow up to 5 books at a time for a maximum duration of 14 days. Reference books, however, can only be used inside the reading hall. I understand. Can I renew my books online if I need them longer? Yes, you can renew them twice through the student portal, provided no other student has reserved them. Also, don't forget that your student ID card also serves as your library access card. That's very convenient. Thank you so much for your help! You're welcome. Have a great semester ahead!")} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px', flex: 1 }}>
                   🔊 Play Full Audio (Харилцан яриа сонсох)
                 </button>
               </div>
@@ -445,73 +462,29 @@ export default function Home() {
             </div>
           )}
 
-          {/* READING SUB-VIEW */}
+          {/* READING SUB-VIEW WITH EXERCISE/QUIZ */}
           {ieltsSubTab === 'reading' && (
             <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
+              <button onClick={() => { setIeltsSubTab('menu'); setReadingAnswered(false); }} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Reading Passage</h3>
-                <button onClick={() => setReadingIndex((prev) => (prev + 1) % readingPassages.length)} style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #334155', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
+                <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Reading Passage & Quiz</h3>
+                <button onClick={() => { setReadingIndex((prev) => (prev + 1) % readingPassages.length); setReadingAnswered(false); }} style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #334155', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
                   🔄 Сэдэв солих (Next Passage)
                 </button>
               </div>
               <h4 style={{ fontSize: '15px', color: '#f8fafc', margin: '4px 0', fontWeight: '700' }}>{readingPassages[readingIndex].title}</h4>
               <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>{readingPassages[readingIndex].text}</p>
-            </div>
-          )}
 
-          {/* WRITING SUB-VIEW */}
-          {ieltsSubTab === 'writing' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Writing Task 2 Prompt</h3>
-                <button onClick={() => setWritingIndex((prev) => (prev + 1) % writingPrompts.length)} style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #334155', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>
-                  🔄 Өөр сэдэв авах (Change Topic)
-                </button>
-              </div>
-              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>"{writingPrompts[writingIndex]}"</p>
-              <textarea value={userEssay} onChange={(e) => setUserEssay(e.target.value)} placeholder="Write your essay response here..." style={{ width: '100%', height: '100px', background: '#0b0f19', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '8px', boxSizing: 'border-box', outline: 'none' }}></textarea>
-              <button onClick={() => alert("Essay submitted for AI Band 7.0+ evaluation!")} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-                Submit Essay for AI Evaluation
-              </button>
-            </div>
-          )}
-
-          {/* SPEAKING SUB-VIEW */}
-          {ieltsSubTab === 'speaking' && (
-            <div style={{ background: '#111827', padding: '18px', borderRadius: '18px', border: '2px solid #38bdf8', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button onClick={() => setIeltsSubTab('menu')} style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textAlign: 'left', fontWeight: '800', padding: 0 }}>← Back to IELTS Menu</button>
-              <h3 style={{ fontSize: '18px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>Speaking Simulator (Part 1, 2, 3)</h3>
-              <p style={{ fontSize: '13px', color: '#f8fafc', lineHeight: '1.5' }}>Independent live speaking module where you can practice directly with the AI English Teacher.</p>
-              <button onClick={() => setActiveTab('speak')} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-                Go to AI Speaking Studio →
-              </button>
-            </div>
-          )}
-
-        </div>
-      )}
-
-      {/* BOTTOM NAVIGATION BAR */}
-      <nav aria-label="Main Navigation" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0b0f19', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-around', padding: '10px 0', zIndex: 1000, maxWidth: '600px', margin: '0 auto' }}>
-        <button onClick={() => setActiveTab('home')} style={{ background: 'none', border: 'none', color: activeTab === 'home' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🏠</span> Home
-        </button>
-        <button onClick={() => setActiveTab('speak')} style={{ background: 'none', border: 'none', color: activeTab === 'speak' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎙️</span> Speak
-        </button>
-        <button onClick={() => setActiveTab('words')} style={{ background: 'none', border: 'none', color: activeTab === 'words' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>📖</span> Words
-        </button>
-        <button onClick={() => setActiveTab('test')} style={{ background: 'none', border: 'none', color: activeTab === 'test' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎯</span> Test
-        </button>
-        <button onClick={() => setActiveTab('ielts')} style={{ background: 'none', border: 'none', color: activeTab === 'ielts' ? '#38bdf8' : '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}>
-          <span style={{ fontSize: '18px' }}>🎓</span> IELTS
-        </button>
-      </nav>
-
-    </main>
-  );
-}
+              <div style={{ background: '#0b0f19', padding: '14px', borderRadius: '12px', border: '1px solid #1f2937', marginTop: '10px' }}>
+                <h4 style={{ fontSize: '14px', marginBottom: '10px', fontWeight: '700' }}>{readingPassages[readingIndex].question}</h4>
+                {!readingAnswered ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {readingPassages[readingIndex].options.map((opt, idx) => (
+                      <button key={idx} onClick={() => handleReadingAnswer(idx)} style={{ background: '#1e293b', color: '#fff', border: '1px solid #334155', padding: '10px', borderRadius: '8px', textAlign: 'left', cursor: 'pointer', fontWeight: '700', fontSize: '13px' }}>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '8px' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '8
