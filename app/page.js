@@ -78,6 +78,18 @@ export default function Home() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    // Text-to-Speech function to pronounce words & sentences
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Таны хөтөч дуу хоолой гаргах функцийг дэмжихгүй байна.");
+    }
+  };
   };
 
   // Voice Recognition for Accessibility (Харааны бэрхшээлтэй болон бичихэд бэрх хүмүүст зориулсан микрофон)
@@ -262,7 +274,37 @@ export default function Home() {
       )}
 
       {/* TAB 3: SPEAK & VOICE MIC */}
-      {activeTab === 'speak' && (
+      {activeTab === 'speak' && ({/* TAB 4: LEARN & VOCABULARY WITH AUDIO PRONUNCIATION */}
+      {activeTab === 'learn' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: '800' }}>Өдрийн шинэ үг (Daily Vocabulary)</h2>
+          {dailyVocabulary.map((item, idx) => (
+            <div key={idx} style={{ background: '#111827', padding: '18px', borderRadius: '16px', border: '2px solid #1f2937' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <h3 style={{ fontSize: '22px', color: '#38bdf8', margin: 0, fontWeight: '800' }}>{item.word}</h3>
+                <button 
+                  onClick={() => speakText(item.word)} 
+                  aria-label={`Pronounce ${item.word}`}
+                  style={{ background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '13px' }}
+                >
+                  🔊 Дуудлага сонсох
+                </button>
+              </div>
+              <p style={{ fontSize: '15px', color: '#f8fafc', margin: '0 0 10px 0', fontWeight: '700' }}>{item.meaning}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b0f19', padding: '10px 12px', borderRadius: '10px', border: '1px solid #1f2937' }}>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0, fontStyle: 'italic' }}>"{item.example}"</p>
+                <button 
+                  onClick={() => speakText(item.example)} 
+                  aria-label="Pronounce example sentence"
+                  style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '16px', padding: '4px' }}
+                >
+                  ▶️
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 160px)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '800' }}>AI Speaking & Voice Tutor</h2>
